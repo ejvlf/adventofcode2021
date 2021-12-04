@@ -13,13 +13,16 @@ def generate_card (source_data : list) -> dict:
     card = {}    
 
     for i, line in enumerate(source_data):
+        
+        col_counter = 1
 
-        for c, number in enumerate(line):
+        for number in line:
 
             if number == "":
                 continue
-            
-            card[int(number)] = (False, i +1, c+1)
+                        
+            card[int(number)] = (False, i + 1, col_counter)
+            col_counter += 1
 
     return card
     
@@ -52,7 +55,9 @@ def card_checker (number : int, cards : list):
 
     return cards
         
-def victory_checker (cards : list) -> dict:
+def victory_checker (cards : list) -> list:
+
+    winners = []
 
     def card_filter(card, callback) -> list:
         list_of_rows = []
@@ -68,21 +73,24 @@ def victory_checker (cards : list) -> dict:
 
     for card in cards:
 
-        card_ = {}
-
         # Return rows and columns that don't have a hit
         loser_rows, loser_cols = card_filter(card, lambda val : val[0] == False)        
 
         if len(loser_rows) < NUMBER_OF_ROWS or len(loser_cols) < NUMBER_OF_COLUMNS:            
 
-            return card
+            winners.append(card)
+
+    if len(winners) > 0:
+
+        return winners
                    
     return
 
 
 #Run the numbers and tag the cards as numbers come out. Return the winning card
-def run_the_numbers(numbers: list, cards: list) -> dict:
+def run_the_numbers(numbers: list, cards: list, part="") -> dict:
 
+    total_cards = len(cards)
 
     for number in numbers:
 
@@ -92,11 +100,28 @@ def run_the_numbers(numbers: list, cards: list) -> dict:
 
         winning_card = victory_checker(cards)
 
-        if winning_card is not None:
+        if winning_card is not None and part == "":
 
             print("We have a winner")
 
-            return winning_card, number
+            return winning_card[0], number
+
+        elif winning_card is not None and part == "part2":
+
+            for card in winning_card:
+                
+                # Remnove from all the cards
+                cards.remove(card)
+                current_size = len(cards)
+
+                print(f"We have a winner. Removed {card}. We still have {current_size} out of {total_cards}")
+
+                if len(cards) == 0:
+
+                    print(f"Last winner: {card}")
+                    return card, number
+
+    return winning_card, number
 
 def score_calculator(victory_number : int, victory_card : dict) -> int:
 
@@ -110,7 +135,6 @@ def score_calculator(victory_number : int, victory_card : dict) -> int:
 
         return sum(list_of_numbers) * victory_number
         
-        
 
 def run():
 
@@ -120,6 +144,7 @@ def run():
     numbers = [ int(number) for number in numbers.split(",")]
 
     list_of_cards_to_eval = []
+    part_2_cards = []
 
     for card in cards_list:
 
@@ -130,6 +155,17 @@ def run():
 
     score = score_calculator(winner_number, winner_card)
     print(f"Part 1 score: {score}")
+
+    # Part 2
+
+    for card in cards_list:
+
+        part_2_cards.append(generate_card(card))
+
+    winner_card, winner_number = run_the_numbers(numbers, part_2_cards, "part2")
+    score = score_calculator(winner_number, winner_card)
+    print(f"Part 2 score: {score}")
+
 
         
 if __name__ == "__main__":

@@ -30,6 +30,41 @@ def calculate_rates (column : list) -> str:
 
     return gamma_bit, epsilon_bit    
        
+def o2_binary(i, work_list):
+    zeros = 0
+    ones = 0
+
+    for x in work_list:
+        if x[i] == '0':
+            zeros += 1
+        else: ones += 1
+    if zeros > ones:
+        return '0'
+    else: return '1'
+
+def co2_binary(i, work_list):
+    zeros = 0
+    ones = 0
+
+    for x in work_list:
+        if x[i] == '0':
+            zeros += 1
+        else: ones += 1
+    if zeros > ones:
+        return '1'
+    else: return '0'
+
+def engine(fun, source):
+    lines_gen = source
+    i = 0
+    while i < 12:
+        if len(lines_gen) == 1:
+            break
+        else: 
+            bit_to_add = fun(i, lines_gen)
+            lines_gen = list(filter(lambda x: x[i] == bit_to_add, lines_gen))
+            i += 1
+    return lines_gen[0]
 
 def run():
 
@@ -64,6 +99,13 @@ def run():
     epsilon_rate_dec = int(epsilon_rate, 2)
 
     print(f"Part 1 solution is {gamma_rate_dec * epsilon_rate_dec}")
+
+    # Part 2
+
+    o2 = int(engine(o2_binary, source_list), 2)
+    co2 = int(engine(co2_binary, source_list), 2)
+
+    print(f"Part 2 solution is {o2 * co2}")
         
 if __name__ == "__main__":
 

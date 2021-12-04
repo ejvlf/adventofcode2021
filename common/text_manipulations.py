@@ -5,9 +5,11 @@ COMMON_DIR_NAME : str = "common"
 
 class TextParser :
 
-    def __init__(self, filename : str):
+    def __init__(self, filename : str, parse_to_ints = True):
         
         root = Path.cwd()
+
+        self.parse_to_ints = parse_to_ints
 
         self.filepath = Path.joinpath(root, COMMON_DIR_NAME, DATA_DIR_NAME, filename)
 
@@ -34,7 +36,14 @@ class TextParser :
 
             with self.filepath.open("r") as f:
 
-                file_to_return = [try_parse(l.rstrip()) for l in f]
+                if self.parse_to_ints:
+
+                    file_to_return = [try_parse(l.rstrip()) for l in f]
+
+                else:
+
+                    file_to_return = [l.rstrip() for l in f]
+
 
         else :
 

@@ -74,7 +74,7 @@ def victory_checker (cards : list) -> list:
     for card in cards:
 
         # Return rows and columns that don't have a hit
-        loser_rows, loser_cols = card_filter(card, lambda val : val[0] == False)        
+        loser_rows, loser_cols = card_filter(card, lambda val : val[0] == False)
 
         if len(loser_rows) < NUMBER_OF_ROWS or len(loser_cols) < NUMBER_OF_COLUMNS:            
 

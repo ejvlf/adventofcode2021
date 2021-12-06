@@ -13,10 +13,7 @@ class TextParser :
 
         self.filepath = Path.joinpath(root, COMMON_DIR_NAME, DATA_DIR_NAME, filename)
 
-    
-    def load_file_as_list (self) -> list:
-
-        def try_parse (int_str : str):
+    def __try_parse (self, int_str : str):
 
             try:
 
@@ -26,7 +23,9 @@ class TextParser :
 
             except ValueError:
 
-                return int_str
+                return int_str  
+    
+    def load_file_as_list (self) -> list:
 
         file_to_return = []
 
@@ -38,7 +37,7 @@ class TextParser :
 
                 if self.parse_to_ints:
 
-                    file_to_return = [try_parse(l.rstrip()) for l in f]
+                    file_to_return = [self.__try_parse(l.rstrip()) for l in f]
 
                 else:
 
@@ -50,6 +49,33 @@ class TextParser :
             print(f"No file to load with name {self.filepath.name}")
 
         return file_to_return
+          
+
+    def load_file_as_ints (self, splitchar: str = ",") -> list:
+
+        file_to_return = []
+
+        print(f"Opening file as a list of ints {self.filepath}")
+
+        if self.filepath.exists:
+
+            with self.filepath.open("r") as f:
+
+                if self.parse_to_ints:
+
+                    file_to_return = list(map( lambda x : self.__try_parse(x), f.read().split(splitchar)))
+
+                else:
+
+                    file_to_return = f.read().split(splitchar)
+
+
+        else :
+
+            print(f"No file to load with name {self.filepath.name}")
+
+        return file_to_return
+
 
 
         

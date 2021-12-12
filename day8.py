@@ -1,4 +1,3 @@
-from os import sendfile
 from common.text_manipulations import TextParser
 
 

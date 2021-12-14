@@ -41,7 +41,7 @@ def count_flashes_over_time_steps(octs : list, number_of_time_steps : int, max_r
     return total
 
 
-def find_first_synchronization_time(octs : list, max_r : int, max_c : int):
+def find_first_synchronization_time(octs : list, max_r : int, max_c : int) -> int:
     all_equal = all(octs[0][0] == octopus for line in octs for octopus in line)
     time = 0
     while not all_equal:

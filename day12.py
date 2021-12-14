@@ -2,54 +2,58 @@ from common.text_manipulations import TextParser
 from collections import defaultdict
 
 
-class Graph:
-    def __init__(self):
-        self._nodes: defaultdict[str, list] = defaultdict(list)
-
-    def add_edge(self, node: str, neighbor: str):
-
-        self._nodes[node].append(neighbor)
-        self._nodes[neighbor].append(node)
-
-
-    def __dfs_count(self, current_node: str, start_node: str, end_node: str, visited_node: set) -> int:
-
-        # path found
-        if current_node == end_node:
+def passage_pathing(cave_map):
+    
+    # Recursive depth-first search
+    def dfs(cave_map : , visited, loc, visited_small):
+        
+        new_visited = visited.copy()
+        if loc == "end":
             return 1
+        if loc in new_visited:
+            new_visited[loc] += 1
+        else:
+            new_visited[loc] = 1
 
-        # return total of paths found from each neighbor
-        return sum(
-            self.__dfs_count(neighbor, start_node, end_node, visited_node | {neighbor})
-            for neighbor in self._nodes[current_node]
-            if not neighbor.lower() or neighbor not in visited_node
-        )
+        # For every node that the current location points to...
+        # If going to an upper case node, just go, no worries
+        # If going to a lower case node, make sure it's not visited already
+        paths = 0
+        for to in cave_map[loc]:
+            if to.isupper():
+                paths += dfs(cave_map, new_visited, to, visited_small)
+            elif to not in new_visited:
+                paths += dfs(cave_map, new_visited, to, visited_small)
+            # For part 2 you can also go to a lower case node if you haven't been
+            # twice already or to another node twice
+            elif to in new_visited and new_visited[to] < 2 and not visited_small:
+                paths += dfs(cave_map, new_visited, to, True)
+        
+        return paths
 
-    def find_path_count(self, start: str, end: str) -> int:
+    visited = {}
+    return dfs(cave_map, visited, "start", False)
 
-        return self.__dfs_count(current=start, start=start, end=end, visited={start})
-
-    def __str__(self):
-        return str(self._nodes)
-
-    @classmethod
-    def from_list(cls, map: list):
-
-        graph = cls()
-
-        for line in map:
-            node, neighbor = line.split(",")
-            graph.add_edge(node, neighbor)
-        return graph
 
 
 def run():
 
     source = TextParser("day12_test.txt").load_file_as_list()
     graph = Graph.from_list(source)
+    cave_map = defaultdict(list)
+    with open('Advent of Code/test.txt', 'r') as input:
+        for line in input:
+            connection = line.rstrip().split("-")
 
-    #Part 1
-    print(graph.find_path_count("start", "end"))
+            # Create a map of every left node to every right node an vise versa
+            # If one of the nodes is start, only keep track of what start goes to
+            # Similarly if one node is end, only keep track of what goes to end
+            if connection[1] != "start" and connection[0] != "end":
+                cave_map[connection[0]].append(connection[1])
+            if connection[0] != "start" and connection[1] != "end":
+                cave_map[connection[1]].append(connection[0])
+    
+    print(passage_pathing(cave_map))
 
 
 if __name__ == "__main__":

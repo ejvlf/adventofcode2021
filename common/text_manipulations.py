@@ -76,6 +76,13 @@ class TextParser :
 
         return file_to_return
 
+    def load_file_as_raw_string(self) -> str:
 
+        file_as_str = ""
+
+        with open(self.filepath) as f:
+            file_as_str = f.read().strip()
+
+        return file_as_str
 
         

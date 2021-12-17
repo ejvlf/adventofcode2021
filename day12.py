@@ -1,59 +1,56 @@
 from common.text_manipulations import TextParser
-from collections import defaultdict
+
+# print all found paths
+def print_paths(paths):
+    for i in sorted(paths):
+        print(",".join(i))
 
 
-def passage_pathing(cave_map):
-    
-    # Recursive depth-first search
-    def dfs(cave_map : , visited, loc, visited_small):
-        
-        new_visited = visited.copy()
-        if loc == "end":
-            return 1
-        if loc in new_visited:
-            new_visited[loc] += 1
-        else:
-            new_visited[loc] = 1
+def dfs(graph, start, end, path, part2):
+    path.append(start)
 
-        # For every node that the current location points to...
-        # If going to an upper case node, just go, no worries
-        # If going to a lower case node, make sure it's not visited already
-        paths = 0
-        for to in cave_map[loc]:
-            if to.isupper():
-                paths += dfs(cave_map, new_visited, to, visited_small)
-            elif to not in new_visited:
-                paths += dfs(cave_map, new_visited, to, visited_small)
-            # For part 2 you can also go to a lower case node if you haven't been
-            # twice already or to another node twice
-            elif to in new_visited and new_visited[to] < 2 and not visited_small:
-                paths += dfs(cave_map, new_visited, to, True)
-        
-        return paths
+    if start == end: # found a path to end
+        return [path]
+    if start not in graph or end not in graph: # stop if start or end don't exist
+        return []
 
-    visited = {}
-    return dfs(cave_map, visited, "start", False)
-
-
+    paths = []
+    for node in graph[start]:
+        # part 1: large caves can be visited indefinitely, small caves only once
+        # part2=True activates the condition for part 2
+        if node.isupper(): # visit big caves indefinitely
+            paths.extend(dfs(graph, node, end, path.copy(), part2))
+        elif node not in path: # visit small caves only once
+            paths.extend(dfs(graph, node, end, path.copy(), part2))
+        # at this point the small cave (node) was visited once
+        # create subpaths like in part 1
+        elif part2 and node != "start": 
+            paths.extend(dfs(graph, node, end, path.copy(), part2=False))
+            
+    return paths
 
 def run():
 
-    source = TextParser("day12_test.txt").load_file_as_list()
-    graph = Graph.from_list(source)
-    cave_map = defaultdict(list)
-    with open('Advent of Code/test.txt', 'r') as input:
-        for line in input:
-            connection = line.rstrip().split("-")
+    caves = {}
 
-            # Create a map of every left node to every right node an vise versa
-            # If one of the nodes is start, only keep track of what start goes to
-            # Similarly if one node is end, only keep track of what goes to end
-            if connection[1] != "start" and connection[0] != "end":
-                cave_map[connection[0]].append(connection[1])
-            if connection[0] != "start" and connection[1] != "end":
-                cave_map[connection[1]].append(connection[0])
-    
-    print(passage_pathing(cave_map))
+    source = TextParser("day12.txt").load_file_as_list()
+    for line in source:
+        v = line.strip().split('-')
+        if v[0] not in caves:
+            caves[v[0]] = [v[1]]
+        else:
+            caves[v[0]].append(v[1])
+        if v[1] not in caves:
+            caves[v[1]] = [v[0]]
+        else:
+            caves[v[1]].append(v[0])
+
+
+    paths1 = dfs(caves, 'start', 'end', path=[], part2=False)
+    paths2 = dfs(caves, 'start', 'end', path=[], part2=True)
+
+    print(f"Part 1: number of distinct paths: {len(paths1)}")
+    print(f"Part 2: number of distinct paths: {len(paths2)}")    
 
 
 if __name__ == "__main__":

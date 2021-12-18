@@ -9,6 +9,15 @@ class Probe:
         self,__drag_impact = 1
         self.__gravity_impact = 1
 
+    def set_ideal_area(self, description : str):
+        
+        c = description[description.find("target area:"):].split(",")
+        prize_area = [tuple(i[2:].split(":")) for i in c]
+
+        return prize_area
+        
+
+
 def run():
 
     source = TextParser("day17.txt").load_file_as_raw_string()

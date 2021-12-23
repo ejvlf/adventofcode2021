@@ -1,6 +1,5 @@
 from common.text_manipulations import TextParser
 
-from time import perf_counter as pfc
 from functools import reduce
 from itertools import permutations
 

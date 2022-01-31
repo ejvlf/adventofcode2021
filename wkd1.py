@@ -76,7 +76,7 @@ def test_number_of_ocurrences (token : str, language_dictionary : list) -> int:
 
     return len(list(result))
 
-def word_test (current_test_case, language_dictionary, l: int):
+def word_test (current_test_case, language_dictionary):
     
     occurrence = 0
     
@@ -96,9 +96,9 @@ def word_test (current_test_case, language_dictionary, l: int):
 
         occurrence += test_number_of_ocurrences("".join(str_to_test), language_dictionary)
 
-        counter = 1
+        counter = len(current_test_case)
 
-        while counter <= l:
+        while counter > 0:
 
             if current_test_case[counter][1] >= len(current_test_case[counter][0]) - 1:
 
@@ -110,7 +110,7 @@ def word_test (current_test_case, language_dictionary, l: int):
 
                 break
                 
-            counter += 1
+            counter -= 1
 
     return occurrence
 
@@ -143,7 +143,7 @@ def run():
 
                 while word_is_ready == False:
 
-                    occ = word_test(v1, language_dictionary, l)
+                    occ = word_test(v1, language_dictionary)
 
                     case_counter += occ
 

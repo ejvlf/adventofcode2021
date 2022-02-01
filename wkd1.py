@@ -99,7 +99,7 @@ def count_occurrence (case : str, word_dictionary : list, l : int) -> int:
                 token_result.append(1 if test_char_exists(char, counter, word_dictionary) else 0)
             
             current_index = closing_parentheses_index + 1
-            eval_result.append(max(token_result))
+            eval_result.append(sum(token_result))
 
         else :
 
@@ -109,7 +109,18 @@ def count_occurrence (case : str, word_dictionary : list, l : int) -> int:
 
         counter += 1
 
-    occurrence = max(eval_result) if min(eval_result) > 0 else 0
+        if min(eval_result) == 0:
+
+            occurrence = 0
+
+        elif min(eval_result) == 1:
+
+            occurrence = 1
+
+        else:
+
+            occurrence = max(eval_result)
+            
 
     return occurrence
 

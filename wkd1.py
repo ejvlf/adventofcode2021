@@ -70,49 +70,49 @@ def split_token(token : str) -> dict:
     token_to_return["length_of_D_lines"] = token.split(" ")[0]
     token_to_return["test_cases"] = token.split(" ")[2] 
 
-def test_number_of_ocurrences (token : str, language_dictionary : list) -> int:
+def test_char_exists(char : str, pos : int, word_dictionary) -> bool:
 
-    result = filter(lambda x: x == token, language_dictionary)
+    for v in word_dictionary:
 
-    return len(list(result))
+        if v[pos - 1] == char:
 
-def word_test (current_test_case, language_dictionary):
-    
+            return True
+
+    return False
+
+def count_occurrence (case : str, word_dictionary : list, l : int) -> int:
+
+    counter = 1
+    current_index = counter - 1
     occurrence = 0
+    eval_result = []
     
-    while True: 
+    while counter <= l:        
 
-        str_to_test = []
-        test_list = []
+        if case[current_index] == "(":
+            
+            token_result = []
+            closing_parentheses_index = case.find(")", current_index)
 
-        for k,v in current_test_case.items():
+            for char in case[current_index+1:closing_parentheses_index]:
 
-            str_to_test.append(v[0][v[1]])
-            test_list.append(v[2])
+                token_result.append(1 if test_char_exists(char, counter, word_dictionary) else 0)
+            
+            current_index = closing_parentheses_index + 1
+            eval_result.append(sum(token_result))
 
-        if all(test_list) == True:
+        else :
 
-            break
+            eval_result.append(1 if test_char_exists(case[current_index], counter, word_dictionary) else 0)
+            current_index += 1
 
-        occurrence += test_number_of_ocurrences("".join(str_to_test), language_dictionary)
 
-        counter = len(current_test_case)
+        counter += 1
 
-        while counter > 0:
-
-            if current_test_case[counter][1] >= len(current_test_case[counter][0]) - 1:
-
-                current_test_case[counter] = (current_test_case[counter][0], 0, True)
-
-            elif current_test_case[counter][1] < len(current_test_case[counter][0]) - 1:
-
-                current_test_case[counter] = (current_test_case[counter][0], current_test_case[counter][1] + 1, current_test_case[counter][2])
-
-                break
-                
-            counter -= 1
+    occurrence = min(eval_result) if min(eval_result) > 0 else 0
 
     return occurrence
+
 
 def run():
 
@@ -123,34 +123,16 @@ def run():
         l = int(raw_data[0].split(" ")[0])
         n = int(raw_data[0].split(" ")[2]) 
 
-
-        language_dictionary = [raw_data[i] for i in range(1,d + 1)]
+            
+        word_dictionary =  [tuple(raw_data[i]) for i in range(1,d + 1)]
         test_cases = [raw_data[i] for i in range(d + 1, len(raw_data))]
         case_output = []
 
         for idx, case in enumerate(test_cases):
 
-            case_counter = 0
-        
-            if case.find("(") == -1:
+            number_of_occurrence = count_occurrence(case, word_dictionary, l)
 
-                case_counter += test_number_of_ocurrences(case, language_dictionary)
-            
-            elif case.find("(") > -1:
-
-                word_is_ready = False            
-                v1 = parse_multiple_possibilities(case, l)
-
-                while word_is_ready == False:
-
-                    occ = word_test(v1, language_dictionary)
-
-                    case_counter += occ
-
-                    word_is_ready = True
-
-
-            case_output.append(f"Case #{idx +1}: {case_counter}")
+            case_output.append(f"Case #{idx +1}: {number_of_occurrence}")
             print(idx + 1)
 
         write_output_file(file, case_output)

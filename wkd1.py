@@ -1,8 +1,16 @@
 import re
 
 INPUT_FILENAMES = ["test.in.txt","Message from Space-small.in.txt", "Message from Space-large.in.txt"]
-TEST_CASE_START = 1
+TEST_CASE_START = 0
 GAME_TOKEN = "a63c6131-2ffc-48b2-b454-d3a264a31b57"
+
+class Pedestrian:
+
+    def __init__ (self):
+
+        self.start_pos = (0,0)
+        self.pedestrian_speed = 1
+
 
 def parse_multiple_possibilities(test_case : str, l: int): 
 
@@ -108,18 +116,6 @@ def count_occurrence (case : str, word_dictionary : list, l : int) -> int:
 
 
         counter += 1
-
-        if min(eval_result) == 0:
-
-            occurrence = 0
-
-        elif min(eval_result) == 1:
-
-            occurrence = 1
-
-        else:
-
-            occurrence = max(eval_result)
             
 
     return occurrence
